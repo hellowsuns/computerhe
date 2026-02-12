@@ -1,358 +1,353 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>코코아톡</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>코코아톡</title>
 
-<style>
-:root{
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
+  <style>
+    :root{
+      --kokoa-w: 760px;
+      --kokoa-h: 920px;
 
-  --kokoa-w: 760px;
-  --kokoa-h: 920px;
+      --top-h: 110px;     /* 채팅방 상단 */
+      --bottom-h: 180px;  /* 채팅방 하단 */
+    }
 
-  --top-h: 110px;     /* ✅ 채팅방 상단 110 */
-  --bottom-h: 180px;  /* 채팅방 하단 180 */
-}
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      overflow:hidden;
+      font-family: system-ui,-apple-system,"Noto Sans KR",sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-*{ box-sizing:border-box; }
+    /* ===== 로그인 화면 (Win11 느낌) ===== */
+    .lock-screen{
+      position:fixed; inset:0;
+      background: url("./lock.jpg") center/cover no-repeat;
+      display:flex; align-items:center; justify-content:center;
+      z-index:2000;
+    }
+    .lock-screen::before{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(to bottom, rgba(0,0,0,.2), rgba(0,0,0,.35));
+      backdrop-filter: blur(14px) saturate(1.15);
+    }
 
-body{
-  margin:0;
-  height:100vh;
-  overflow:hidden;
-  font-family: system-ui,-apple-system,"Noto Sans KR",sans-serif;
-  -webkit-tap-highlight-color: transparent;
-}
+    .lock-ui{
+      position:relative;
+      width:min(520px, 92vw);
+      z-index:1;
+      color:#fff;
+    }
+    .lock-card{
+      padding:26px 22px 22px;
+      border-radius:28px;
+      background: rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.24);
+      backdrop-filter: blur(18px) saturate(1.2);
+      box-shadow:0 30px 90px rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .profile{
+      width:86px;height:86px;
+      margin:0 auto 16px;
+      border-radius:50%;
+      background: rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.24);
+      display:grid;place-items:center;
+    }
+    .profile span{ font-size:34px; }
 
-/* ===== 로그인 화면 (Windows 11) ===== */
-.lock-screen{
-  position:fixed; inset:0;
-  background: url("lock.jpg") center/cover no-repeat;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:2000;
-}
-.lock-screen::before{
-  content:"";
-  position:absolute; inset:0;
-  background: linear-gradient(to bottom, rgba(0,0,0,.2), rgba(0,0,0,.35));
-  backdrop-filter: blur(14px) saturate(1.15);
-}
+    .lock-title{
+      font-size:20px;
+      font-weight:900;
+      margin-bottom:18px;
+      letter-spacing:.5px;
+    }
 
-.lock-ui{
-  position:relative;
-  width:min(520px, 100%);
-  z-index:1;
-  color:#fff;
-}
-.lock-card{
-  padding:26px 22px 22px;
-  border-radius:28px;
-  background: rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.24);
-  backdrop-filter: blur(18px) saturate(1.2);
-  box-shadow:0 30px 90px rgba(0,0,0,.45);
-  text-align:center;
-}
-.profile{
-  width:86px;height:86px;
-  margin:0 auto 16px;
-  border-radius:50%;
-  background: rgba(255,255,255,.18);
-  border:1px solid rgba(255,255,255,.24);
-  display:grid;place-items:center;
-}
-.profile span{ font-size:34px; }
+    .lock-row{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .lock-row input{
+      width:min(320px,100%);
+      padding:12px 14px;
+      font-size:16px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(0,0,0,.22);
+      color:#fff;
+      outline:none;
+    }
+    .lock-row button{
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.12);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .lock-row button:hover{ background: rgba(255,255,255,.18); }
 
-.lock-title{
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:18px;
-  letter-spacing:.5px;
-}
+    .lock-error{
+      display:none;
+      margin-top:12px;
+      color:#ffd1d1;
+      font-size:14px;
+    }
+    .lock-hint{
+      display:none;
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:16px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.18);
+      font-weight:900;
+      letter-spacing:.4px;
+      font-size:14px;
+    }
+    .lock-sub{
+      margin-top:12px;
+      font-size:12px;
+      opacity:.75;
+    }
 
-.lock-row{
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-.lock-row input{
-  width:min(320px,100%);
-  padding:12px 14px;
-  font-size:16px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.22);
-  background: rgba(0,0,0,.22);
-  color:#fff;
-}
-.lock-row button{
-  padding:12px 16px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.22);
-  background: rgba(255,255,255,.12);
-  color:#fff;
-  font-weight:800;
-  cursor:pointer;
-}
-.lock-row button:hover{ background: rgba(255,255,255,.18); }
+    /* ===== 바탕화면 (GitHub Pages에서도 경로 안정) ===== */
+    .desktop{
+      width:100vw;
+      height:100vh;
+      position:relative;
 
-.lock-error{
-  display:none;
-  margin-top:12px;
-  color:#ffd1d1;
-}
-.lock-hint{
-  display:none;
-  margin-top:12px;
-  padding:12px 14px;
-  border-radius:16px;
-  background: rgba(0,0,0,.25);
-  border:1px solid rgba(255,255,255,.18);
-  font-weight:900;
-  letter-spacing:.4px;
-}
-.lock-sub{
-  margin-top:12px;
-  font-size:12px;
-  opacity:.75;
-}
+      background-image: url("./desktop.jpg");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: contain;  /* 안 잘리게 */
+      background-color: #0f1115; /* 여백 보정 */
+    }
 
-/* ===== 바탕화면 (✅ 이미지 안 잘리게 contain) ===== */
-.desktop{
-  width:100vw;
-  height:100vh;
-  position:relative;
+    .center-btn{
+      position:absolute; inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
 
-  background-image: url("desktop.jpg");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;   /* ✅ 창에 맞춰 전체 보이게 */
-  background-color: #0f1115;  /* ✅ 남는 여백 보정 */
-}
+    /* ===== 마우스 클릭 UI ===== */
+    .click-ui{
+      position:relative;
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .mouse-cursor{
+      font-size:42px;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,.45));
+      animation: clickFloat 2.2s ease-in-out infinite;
+    }
+    .click-bubble{
+      position:relative;
+      background: rgba(0,0,0,.6);
+      color:#fff;
+      padding:14px 18px;
+      border-radius:18px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 45px rgba(0,0,0,.45);
+      border:1px solid rgba(255,255,255,.25);
+      min-width:220px;
+    }
+    .click-bubble::before{
+      content:"";
+      position:absolute;
+      left:-6px;
+      top:20px;
+      width:12px;
+      height:12px;
+      background: rgba(0,0,0,.6);
+      transform: rotate(45deg);
+      border-left:1px solid rgba(255,255,255,.25);
+      border-bottom:1px solid rgba(255,255,255,.25);
+    }
+    .click-title{ font-size:15px; font-weight:900; }
+    .click-sub{ font-size:13px; opacity:.85; }
 
-.center-btn{
-  position:absolute; inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+    @keyframes clickFloat{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-6px); }
+    }
 
-/* ===== 마우스 클릭 UI ===== */
-.click-ui{
-  position:relative;
-  display:flex;
-  align-items:flex-start;
-  gap:12px;
-  cursor:pointer;
-  user-select:none;
-}
-.mouse-cursor{
-  font-size:42px;
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,.45));
-  animation: clickFloat 2.2s ease-in-out infinite;
-}
-.click-bubble{
-  position:relative;
-  background: rgba(0,0,0,.6);
-  color:#fff;
-  padding:14px 18px;
-  border-radius:18px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 18px 45px rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.25);
-  min-width:220px;
-}
-.click-bubble::before{
-  content:"";
-  position:absolute;
-  left:-6px;
-  top:20px;
-  width:12px;
-  height:12px;
-  background: rgba(0,0,0,.6);
-  transform: rotate(45deg);
-  border-left:1px solid rgba(255,255,255,.25);
-  border-bottom:1px solid rgba(255,255,255,.25);
-}
-.click-title{
-  font-size:15px;
-  font-weight:900;
-}
-.click-sub{
-  font-size:13px;
-  opacity:.85;
-}
-@keyframes clickFloat{
-  0%,100%{ transform: translateY(0); }
-  50%{ transform: translateY(-6px); }
-}
+    /* ===== 코코아톡 팝업 ===== */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      z-index:1000;
+    }
+    .overlay.show{ display:flex; }
 
-/* ===== 코코아톡 팝업 ===== */
-.overlay{
-  position:fixed; inset:0;
-  background: rgba(0,0,0,.55);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:14px;
-  z-index:1000;
-}
-.overlay.show{ display:flex; }
+    .kokoa{
+      width:min(var(--kokoa-w), 100%);
+      height:min(var(--kokoa-h), 100%);
+      background:#f5f6f7;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+      display:flex;
+      flex-direction:column;
+      position:relative;
+    }
 
-.kokoa{
-  width:min(var(--kokoa-w),100%);
-  height:min(var(--kokoa-h),100%);
-  background:#f5f6f7;
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.45);
-  display:flex;
-  flex-direction:column;
-  position:relative;
-}
+    .close{
+      position:absolute;
+      top:10px;right:10px;
+      width:40px;height:40px;
+      border-radius:14px;
+      background: rgba(255,255,255,.8);
+      display:grid;place-items:center;
+      font-weight:900;
+      cursor:pointer;
+      user-select:none;
+      z-index:10;
+    }
 
-.close{
-  position:absolute;
-  top:10px;right:10px;
-  width:40px;height:40px;
-  border-radius:14px;
-  background: rgba(255,255,255,.8);
-  display:grid;place-items:center;
-  font-weight:900;
-  cursor:pointer;
-}
+    .kokoa-top{
+      height:var(--top-h);
+      flex:0 0 var(--top-h);
+      background:#fff;
+      border-bottom:1px solid #ddd;
+    }
+    .kokoa-bottom{
+      height:var(--bottom-h);
+      flex:0 0 var(--bottom-h);
+      background:#fff;
+      border-top:1px solid #ddd;
+    }
+    .kokoa-top img,
+    .kokoa-bottom img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      background:#fff;
+    }
 
-.kokoa-top{
-  height:var(--top-h);
-  flex:0 0 var(--top-h);
-  background:#fff;
-  border-bottom:1px solid #ddd;
-}
-.kokoa-bottom{
-  height:var(--bottom-h);
-  flex:0 0 var(--bottom-h);
-  background:#fff;
-  border-top:1px solid #ddd;
-}
-.kokoa-top img,
-.kokoa-bottom img{
-  width:100%;
-  height:100%;
-  object-fit:contain; /* ✅ 이미지 잘림 방지 */
-}
+    .kokoa-body{
+      flex:1;
+      overflow-y:auto;
+      background:#b7c7da;
+      -webkit-overflow-scrolling: touch;
+    }
+    .kokoa-body img{
+      width:100%;
+      height:auto;
+      display:block;
+    }
 
-.kokoa-body{
-  flex:1;
-  overflow-y:auto;
-  background:#b7c7da;
-}
-.kokoa-body img{
-  width:100%;
-  height:auto;
-}
-
-/* 모바일 대응 */
-@media (max-height:740px){
-  :root{
-    --top-h:100px;
-    --bottom-h:150px;
-    --kokoa-h:92vh;
-    --kokoa-w:92vw;
-  }
-}
-</style>
+    /* 작은 화면에서 자동으로 더 잘 맞게 */
+    @media (max-height:740px){
+      :root{
+        --top-h: 100px;
+        --bottom-h: 150px;
+        --kokoa-w: 92vw;
+        --kokoa-h: 92vh;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <!-- 로그인 -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-ui">
+      <div class="lock-card">
+        <div class="profile"><span>👤</span></div>
+        <div class="lock-title">황해해</div>
 
-<!-- 로그인 -->
-<div class="lock-screen" id="lockScreen">
-  <div class="lock-ui">
-    <div class="lock-card">
-      <div class="profile"><span>👤</span></div>
+        <div class="lock-row">
+          <input type="password" id="passwordInput" placeholder="비밀번호" autocomplete="off">
+          <button id="unlockBtn">확인</button>
+          <button id="hintBtn">힌트 보기</button>
+        </div>
 
-      <!-- ✅ 로그인 문구 대신 -->
-      <div class="lock-title">황해해</div>
-
-      <div class="lock-row">
-        <input type="password" id="passwordInput" placeholder="비밀번호">
-        <button id="unlockBtn">확인</button>
-        <button id="hintBtn">힌트 보기</button>
-      </div>
-
-      <div class="lock-error" id="lockError">비밀번호가 틀렸습니다</div>
-      <div class="lock-hint" id="hintText">HAPPY BIRTHDAY</div>
-      <div class="lock-sub">Enter 키로도 입력할 수 있습니다</div>
-    </div>
-  </div>
-</div>
-
-<!-- 바탕화면 -->
-<div class="desktop">
-  <div class="center-btn">
-    <div class="click-ui" id="openBtn" role="button" tabindex="0">
-      <div class="mouse-cursor">🖱️</div>
-      <div class="click-bubble">
-        <div class="click-title">코코아톡 내용</div>
-        <div class="click-sub">자세히 살펴보기</div>
+        <div class="lock-error" id="lockError">비밀번호가 틀렸습니다</div>
+        <div class="lock-hint" id="hintText">HAPPY BIRTHDAY</div>
+        <div class="lock-sub">Enter 키로도 입력할 수 있습니다</div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- 코코아톡 팝업 -->
-<div class="overlay" id="overlay">
-  <div class="kokoa">
-    <div class="close" id="closeBtn">✕</div>
-    <div class="kokoa-top"><img src="kokoa_top.png" alt=""></div>
-    <div class="kokoa-body"><img src="kokoa_chat_long.png" alt=""></div>
-    <div class="kokoa-bottom"><img src="kokoa_bottom.png" alt=""></div>
+  <!-- 바탕화면 -->
+  <div class="desktop">
+    <div class="center-btn">
+      <div class="click-ui" id="openBtn" role="button" tabindex="0" aria-label="코코아톡 내용 자세히 살펴보기">
+        <div class="mouse-cursor">🖱️</div>
+        <div class="click-bubble">
+          <div class="click-title">코코아톡 내용</div>
+          <div class="click-sub">자세히 살펴보기</div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-const PASSWORD = "1234";
+  <!-- 코코아톡 팝업 -->
+  <div class="overlay" id="overlay">
+    <div class="kokoa" role="dialog" aria-modal="true" aria-label="코코아톡 대화창">
+      <div class="close" id="closeBtn">✕</div>
+      <div class="kokoa-top"><img src="./kokoa_top.png" alt=""></div>
+      <div class="kokoa-body"><img src="./kokoa_chat_long.png" alt=""></div>
+      <div class="kokoa-bottom"><img src="./kokoa_bottom.png" alt=""></div>
+    </div>
+  </div>
 
-const lockScreen = document.getElementById("lockScreen");
-const passwordInput = document.getElementById("passwordInput");
-const unlockBtn = document.getElementById("unlockBtn");
-const lockError = document.getElementById("lockError");
+  <script>
+    const PASSWORD = "1234";
 
-const hintBtn = document.getElementById("hintBtn");
-const hintText = document.getElementById("hintText");
+    const lockScreen = document.getElementById("lockScreen");
+    const passwordInput = document.getElementById("passwordInput");
+    const unlockBtn = document.getElementById("unlockBtn");
+    const lockError = document.getElementById("lockError");
 
-hintBtn.onclick = () => {
-  hintText.style.display =
-    hintText.style.display === "block" ? "none" : "block";
-};
+    const hintBtn = document.getElementById("hintBtn");
+    const hintText = document.getElementById("hintText");
 
-function unlock(){
-  if(passwordInput.value === PASSWORD){
-    lockScreen.style.display = "none";
-  }else{
-    lockError.style.display = "block";
-    passwordInput.value="";
-    passwordInput.focus();
-  }
-}
-unlockBtn.onclick = unlock;
-passwordInput.onkeydown = e => { if(e.key==="Enter") unlock(); };
+    hintBtn.addEventListener("click", () => {
+      hintText.style.display = (hintText.style.display === "block") ? "none" : "block";
+    });
 
-const overlay = document.getElementById("overlay");
-const openBtn = document.getElementById("openBtn");
-const closeBtn = document.getElementById("closeBtn");
+    function unlock(){
+      if(passwordInput.value === PASSWORD){
+        lockScreen.style.display = "none";
+      }else{
+        lockError.style.display = "block";
+        passwordInput.value = "";
+        passwordInput.focus();
+      }
+    }
 
-openBtn.onclick = () => overlay.classList.add("show");
-openBtn.onkeydown = (e) => { if(e.key==="Enter" || e.key===" ") overlay.classList.add("show"); };
-closeBtn.onclick = () => overlay.classList.remove("show");
-</script>
+    unlockBtn.addEventListener("click", unlock);
+    passwordInput.addEventListener("keydown", (e)=>{ if(e.key==="Enter") unlock(); });
 
+    const overlay = document.getElementById("overlay");
+    const openBtn = document.getElementById("openBtn");
+    const closeBtn = document.getElementById("closeBtn");
+
+    openBtn.addEventListener("click", ()=> overlay.classList.add("show"));
+    openBtn.addEventListener("keydown", (e)=> {
+      if(e.key==="Enter" || e.key===" ") overlay.classList.add("show");
+    });
+    closeBtn.addEventListener("click", ()=> overlay.classList.remove("show"));
+  </script>
 </body>
 </html>
+
